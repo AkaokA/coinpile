@@ -42,7 +42,7 @@ class GameViewController: UIViewController {
         
         // retrieve the ship node
         let coin = SCNCylinder(radius: 2, height: 0.4)
-        coin.firstMaterial?.lightingModel = SCNMaterial.LightingModel(rawValue: "physicallyBased")
+        coin.firstMaterial?.lightingModel = .physicallyBased
         coin.firstMaterial?.diffuse.contents = UIColor(red: 0.85, green: 0.82, blue: 0.58, alpha: 1.0)
         coin.firstMaterial?.roughness.contents = NSNumber(value: 0.5)
         coin.firstMaterial?.metalness.contents = NSNumber(value: 1.0)
@@ -67,45 +67,45 @@ class GameViewController: UIViewController {
         scnView.autoenablesDefaultLighting = true
         
         // add a tap gesture recognizer
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
-        scnView.addGestureRecognizer(tapGesture)
+//        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
+//        scnView.addGestureRecognizer(tapGesture)
     }
     
-    @objc
-    func handleTap(_ gestureRecognize: UIGestureRecognizer) {
-        // retrieve the SCNView
-        let scnView = self.view as! SCNView
-        
-        // check what nodes are tapped
-        let p = gestureRecognize.location(in: scnView)
-        let hitResults = scnView.hitTest(p, options: [:])
-        // check that we clicked on at least one object
-        if hitResults.count > 0 {
-            // retrieved the first clicked object
-            let result = hitResults[0]
-            
-            // get its material
-            let material = result.node.geometry!.firstMaterial!
-            
-            // highlight it
-            SCNTransaction.begin()
-            SCNTransaction.animationDuration = 0.5
-            
-            // on completion - unhighlight
-            SCNTransaction.completionBlock = {
-                SCNTransaction.begin()
-                SCNTransaction.animationDuration = 0.5
-                
-                material.emission.contents = UIColor.black
-                
-                SCNTransaction.commit()
-            }
-            
-            material.emission.contents = UIColor.red
-            
-            SCNTransaction.commit()
-        }
-    }
+//    @objc
+//    func handleTap(_ gestureRecognize: UIGestureRecognizer) {
+//        // retrieve the SCNView
+//        let scnView = self.view as! SCNView
+//
+//        // check what nodes are tapped
+//        let p = gestureRecognize.location(in: scnView)
+//        let hitResults = scnView.hitTest(p, options: [:])
+//        // check that we clicked on at least one object
+//        if hitResults.count > 0 {
+//            // retrieved the first clicked object
+//            let result = hitResults[0]
+//
+//            // get its material
+//            let material = result.node.geometry!.firstMaterial!
+//
+//            // highlight it
+//            SCNTransaction.begin()
+//            SCNTransaction.animationDuration = 0.5
+//
+//            // on completion - unhighlight
+//            SCNTransaction.completionBlock = {
+//                SCNTransaction.begin()
+//                SCNTransaction.animationDuration = 0.5
+//
+//                material.emission.contents = UIColor.black
+//
+//                SCNTransaction.commit()
+//            }
+//
+//            material.emission.contents = UIColor.red
+//
+//            SCNTransaction.commit()
+//        }
+//    }
     
     override var shouldAutorotate: Bool {
         return true
