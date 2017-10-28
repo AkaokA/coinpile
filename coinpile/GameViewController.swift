@@ -16,7 +16,7 @@ class GameViewController: UIViewController {
         super.viewDidLoad()
         
         // create a new scene
-        let scene = SCNScene(named: "art.scnassets/ship.scn")!
+        let scene = SCNScene()
         
         // create and add a camera to the scene
         let cameraNode = SCNNode()
@@ -30,21 +30,25 @@ class GameViewController: UIViewController {
         let lightNode = SCNNode()
         lightNode.light = SCNLight()
         lightNode.light!.type = .omni
-        lightNode.position = SCNVector3(x: 0, y: 10, z: 10)
+        lightNode.position = SCNVector3(x: 5, y: 5, z: -5)
         scene.rootNode.addChildNode(lightNode)
         
         // create and add an ambient light to the scene
         let ambientLightNode = SCNNode()
         ambientLightNode.light = SCNLight()
         ambientLightNode.light!.type = .ambient
-        ambientLightNode.light!.color = UIColor.darkGray
+        ambientLightNode.light!.color = UIColor.gray
         scene.rootNode.addChildNode(ambientLightNode)
         
         // retrieve the ship node
-        let ship = scene.rootNode.childNode(withName: "ship", recursively: true)!
+        let coin = SCNCylinder(radius: 2, height: 0.4)
+        coin.firstMaterial?.lightingModel = SCNMaterial.LightingModel(rawValue: "physicallyBased")
+        coin.firstMaterial?.diffuse.contents = UIColor(red: 0.85, green: 0.82, blue: 0.58, alpha: 1.0)
+        coin.firstMaterial?.roughness.contents = NSNumber(value: 0.5)
+        coin.firstMaterial?.metalness.contents = NSNumber(value: 1.0)
         
-        // animate the 3d object
-        ship.runAction(SCNAction.repeatForever(SCNAction.rotateBy(x: 0, y: 2, z: 0, duration: 1)))
+        let coinNode = SCNNode(geometry: coin)
+        scene.rootNode.addChildNode(coinNode)
         
         // retrieve the SCNView
         let scnView = self.view as! SCNView
@@ -59,7 +63,8 @@ class GameViewController: UIViewController {
         scnView.showsStatistics = true
         
         // configure the view
-        scnView.backgroundColor = UIColor.black
+        scnView.backgroundColor = UIColor(red: 0.97, green: 0.97, blue: 0.96, alpha: 1.0)
+        scnView.autoenablesDefaultLighting = true
         
         // add a tap gesture recognizer
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
