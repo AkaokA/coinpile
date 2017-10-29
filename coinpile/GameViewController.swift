@@ -24,39 +24,41 @@ class GameViewController: UIViewController {
         scene.rootNode.addChildNode(cameraNode)
         
         // place the camera
-        cameraNode.position = SCNVector3(x: 0, y: 0, z: 15)
+        cameraNode.position = SCNVector3(x: 0, y: 10, z: 16)
+        cameraNode.eulerAngles = SCNVector3Make(-Float.pi/8, 0, 0);
         
         // create and add a light to the scene
         let lightNode = SCNNode()
         lightNode.light = SCNLight()
         lightNode.light!.type = .omni
         lightNode.light?.intensity = 1000.0
-        lightNode.position = SCNVector3(x: 5, y: 5, z: 5)
+        lightNode.position = SCNVector3(x: -5, y: 10, z: 5)
         scene.rootNode.addChildNode(lightNode)
         
         // create and add an ambient light to the scene
         let ambientLightNode = SCNNode()
         ambientLightNode.light = SCNLight()
         ambientLightNode.light!.type = .ambient
-        ambientLightNode.light!.color = UIColor(hue: 0.0, saturation: 0.0, brightness: 0.5, alpha: 1.0)
+        ambientLightNode.light!.color = UIColor(hue: 0.0, saturation: 0.0, brightness: 0.25, alpha: 1.0)
         scene.rootNode.addChildNode(ambientLightNode)
         
-        // configure coin node
-        let coin = SCNCylinder(radius: 2, height: 0.2)
-        coin.firstMaterial?.lightingModel = .physicallyBased
-        coin.firstMaterial?.diffuse.contents = UIColor(red: 0.85, green: 0.82, blue: 0.58, alpha: 1.0)
-//        coin.firstMaterial?.roughness.contents = 0.9
-        coin.firstMaterial?.metalness.contents = 1.0
+        // configure physics simulation
+        scene.physicsWorld.speed = 1.5
         
-        let coinFaceImage = UIImage(named: "art.scnassets/coin_normal_map.png")
-        coin.firstMaterial?.normal.contents = coinFaceImage
+        // configure coin
+
         
-        let coinNode = SCNNode(geometry: coin)
-        scene.rootNode.addChildNode(coinNode)
+        // configure floor node
+        let floor = SCNBox(width: 50, height: 0.2, length: 50, chamferRadius: 0.0)
+        floor.firstMaterial?.lightingModel = .constant
+        floor.firstMaterial?.diffuse.contents = UIColor(red: 0.97, green: 0.97, blue: 0.96, alpha: 1.0)
         
-        let spin = SCNAction.rotateBy(x: CGFloat(Float.pi), y: 0.0, z: 0.0, duration: 1.0)
-        let action = SCNAction.repeatForever(spin)
-        coinNode.runAction(action)
+        let floorNode = SCNNode(geometry: floor)
+        floorNode.position = SCNVector3(x: 0, y: -4, z: 0)
+        let floorPhysicsShape = SCNPhysicsShape(geometry: floor, options: nil)
+        floorNode.physicsBody = SCNPhysicsBody(type: .kinematic, shape: floorPhysicsShape)
+        
+        scene.rootNode.addChildNode(floorNode)
         
         // retrieve the SCNView
         let scnView = self.view as! SCNView
@@ -75,45 +77,44 @@ class GameViewController: UIViewController {
 //        scnView.autoenablesDefaultLighting = true
         
         // add a tap gesture recognizer
-//        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
-//        scnView.addGestureRecognizer(tapGesture)
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
+        scnView.addGestureRecognizer(tapGesture)
     }
     
-//    @objc
-//    func handleTap(_ gestureRecognize: UIGestureRecognizer) {
-//        // retrieve the SCNView
-//        let scnView = self.view as! SCNView
-//
-//        // check what nodes are tapped
-//        let p = gestureRecognize.location(in: scnView)
-//        let hitResults = scnView.hitTest(p, options: [:])
-//        // check that we clicked on at least one object
-//        if hitResults.count > 0 {
-//            // retrieved the first clicked object
-//            let result = hitResults[0]
-//
-//            // get its material
-//            let material = result.node.geometry!.firstMaterial!
-//
-//            // highlight it
-//            SCNTransaction.begin()
-//            SCNTransaction.animationDuration = 0.5
-//
-//            // on completion - unhighlight
-//            SCNTransaction.completionBlock = {
-//                SCNTransaction.begin()
-//                SCNTransaction.animationDuration = 0.5
-//
-//                material.emission.contents = UIColor.black
-//
-//                SCNTransaction.commit()
-//            }
-//
-//            material.emission.contents = UIColor.red
-//
-//            SCNTransaction.commit()
-//        }
-//    }
+    @objc func handleTap(_ gestureRecognize: UIGestureRecognizer) {
+        // retrieve the SCNView
+        let scnView = self.view as! SCNView
+
+        scnView.scene?.rootNode.addChildNode(newCoin())
+    }
+    
+    func newCoin() -> SCNNode {
+        let coin = SCNCylinder(radius: 0.8, height: 0.08)
+        coin.firstMaterial?.lightingModel = .physicallyBased
+        coin.firstMaterial?.diffuse.contents = UIColor(red: 0.85, green: 0.82, blue: 0.58, alpha: 1.0)
+        coin.firstMaterial?.roughness.contents = NSNumber(value: 0.2)
+        coin.firstMaterial?.metalness.contents = NSNumber(value: 1.0)
+        
+        let coinFaceImage = UIImage(named: "art.scnassets/coin_normal_map.png")
+        coin.firstMaterial?.normal.contents = coinFaceImage
+        
+        let coinNode = SCNNode(geometry: coin)
+        coinNode.position = SCNVector3(x: 0.0, y: 15.0, z: 0.0)
+        
+        let coinPhysicsShape = SCNPhysicsShape(geometry: coin, options: nil)
+        coinNode.physicsBody = SCNPhysicsBody(type: .dynamic, shape: coinPhysicsShape)
+        coinNode.physicsBody?.mass = 0.2
+        coinNode.physicsBody?.friction = 0.8
+        coinNode.physicsBody?.rollingFriction = 0.1
+        coinNode.physicsBody?.damping = 0.1
+        coinNode.physicsBody?.angularDamping = 0.4
+        
+        let coinTorque = SCNVector4(x: 0.5, y: 0.2, z: 0.2, w: 1.0)
+        coinNode.physicsBody?.applyTorque(coinTorque, asImpulse: true)
+        
+        return coinNode
+        
+    }
     
     override var shouldAutorotate: Bool {
         return true
