@@ -31,22 +31,19 @@ class GameViewController: UIViewController {
         let lightNode = SCNNode()
         lightNode.light = SCNLight()
         lightNode.light!.type = .omni
-        lightNode.light?.intensity = 1000.0
-        lightNode.position = SCNVector3(x: -5, y: 10, z: 5)
+        lightNode.light?.intensity = 400.0
+        lightNode.position = SCNVector3(x: 0.0, y: 12.0, z: -5.0)
         scene.rootNode.addChildNode(lightNode)
         
         // create and add an ambient light to the scene
         let ambientLightNode = SCNNode()
         ambientLightNode.light = SCNLight()
         ambientLightNode.light!.type = .ambient
-        ambientLightNode.light!.color = UIColor(hue: 0.0, saturation: 0.0, brightness: 0.25, alpha: 1.0)
+        ambientLightNode.light!.color = UIColor(hue: 0.0, saturation: 0.0, brightness: 0.5, alpha: 1.0)
         scene.rootNode.addChildNode(ambientLightNode)
         
         // configure physics simulation
         scene.physicsWorld.speed = 1.5
-        
-        // configure coin
-
         
         // configure floor node
         let floor = SCNBox(width: 50, height: 0.2, length: 50, chamferRadius: 0.0)
@@ -67,24 +64,25 @@ class GameViewController: UIViewController {
         scnView.scene = scene
         
         // allows the user to manipulate the camera
-        scnView.allowsCameraControl = true
+//        scnView.allowsCameraControl = true
         
         // show statistics such as fps and timing information
-        scnView.showsStatistics = true
+//        scnView.showsStatistics = true
         
         // configure the view
         scnView.backgroundColor = UIColor(red: 0.97, green: 0.97, blue: 0.96, alpha: 1.0)
-//        scnView.autoenablesDefaultLighting = true
         
         // add a tap gesture recognizer
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
         scnView.addGestureRecognizer(tapGesture)
+        
     }
     
     @objc func handleTap(_ gestureRecognize: UIGestureRecognizer) {
         // retrieve the SCNView
         let scnView = self.view as! SCNView
-
+        
+        // spawn a coin
         scnView.scene?.rootNode.addChildNode(newCoin())
     }
     
@@ -92,8 +90,8 @@ class GameViewController: UIViewController {
         let coin = SCNCylinder(radius: 0.8, height: 0.08)
         coin.firstMaterial?.lightingModel = .physicallyBased
         coin.firstMaterial?.diffuse.contents = UIColor(red: 0.85, green: 0.82, blue: 0.58, alpha: 1.0)
-        coin.firstMaterial?.roughness.contents = NSNumber(value: 0.2)
-        coin.firstMaterial?.metalness.contents = NSNumber(value: 1.0)
+        coin.firstMaterial?.roughness.contents = NSNumber(value: 0.4)
+        coin.firstMaterial?.metalness.contents = NSNumber(value: 0.8)
         
         let coinFaceImage = UIImage(named: "art.scnassets/coin_normal_map.png")
         coin.firstMaterial?.normal.contents = coinFaceImage
@@ -113,7 +111,6 @@ class GameViewController: UIViewController {
         coinNode.physicsBody?.applyTorque(coinTorque, asImpulse: true)
         
         return coinNode
-        
     }
     
     override var shouldAutorotate: Bool {
