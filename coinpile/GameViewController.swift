@@ -31,7 +31,7 @@ class GameViewController: UIViewController {
         let lightNode = SCNNode()
         lightNode.light = SCNLight()
         lightNode.light!.type = .omni
-        lightNode.light?.intensity = 500.0
+        lightNode.light?.intensity = 750
         lightNode.position = SCNVector3(x: -3.0, y: 10.0, z: -3.0)
         scene.rootNode.addChildNode(lightNode)
         
@@ -103,13 +103,13 @@ class GameViewController: UIViewController {
     
     func newCoin() -> SCNNode {
         let coin = SCNCylinder(radius: 0.8, height: 0.16)
+        coin.radialSegmentCount = 20
+        
         coin.firstMaterial?.lightingModel = .physicallyBased
         coin.firstMaterial?.diffuse.contents = UIImage(named: "art.scnassets/coin_texture.png")
+        coin.firstMaterial?.normal.contents = UIImage(named: "art.scnassets/coin_normal_map.png")
         coin.firstMaterial?.roughness.contents = NSNumber(value: 0.5)
         coin.firstMaterial?.metalness.contents = NSNumber(value: 1.0)
-        
-        let coinNormalMap = UIImage(named: "art.scnassets/coin_normal_map.png")
-        coin.firstMaterial?.normal.contents = coinNormalMap
         
         let coinNode = SCNNode(geometry: coin)
         coinNode.position = SCNVector3(x: 0.0, y: 15.0, z: 0.0)
