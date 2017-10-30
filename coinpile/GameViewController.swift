@@ -31,29 +31,29 @@ class GameViewController: UIViewController {
         let lightNode = SCNNode()
         lightNode.light = SCNLight()
         lightNode.light!.type = .omni
-        lightNode.light?.intensity = 400.0
-        lightNode.position = SCNVector3(x: 0.0, y: 12.0, z: -5.0)
+        lightNode.light?.intensity = 500.0
+        lightNode.position = SCNVector3(x: -3.0, y: 10.0, z: -3.0)
         scene.rootNode.addChildNode(lightNode)
         
         // create and add an ambient light to the scene
         let ambientLightNode = SCNNode()
         ambientLightNode.light = SCNLight()
         ambientLightNode.light!.type = .ambient
-        ambientLightNode.light!.color = UIColor(hue: 0.0, saturation: 0.0, brightness: 0.5, alpha: 1.0)
+        ambientLightNode.light!.color = UIColor(hue: 0.0, saturation: 0.0, brightness: 1.0, alpha: 1.0)
         scene.rootNode.addChildNode(ambientLightNode)
         
         // configure physics simulation
-        scene.physicsWorld.speed = 1.5
+        scene.physicsWorld.speed = 1.0
         
         // configure floor node
-        let floor = SCNBox(width: 50, height: 0.2, length: 50, chamferRadius: 0.0)
+        let floor = SCNBox(width: 50, height: 5, length: 50, chamferRadius: 0.0)
         floor.firstMaterial?.lightingModel = .constant
         floor.firstMaterial?.diffuse.contents = UIColor(red: 0.97, green: 0.97, blue: 0.96, alpha: 1.0)
         
         let floorNode = SCNNode(geometry: floor)
-        floorNode.position = SCNVector3(x: 0, y: -4, z: 0)
+        floorNode.position = SCNVector3(x: 0.0, y: -4.0, z: 0.0)
         let floorPhysicsShape = SCNPhysicsShape(geometry: floor, options: nil)
-        floorNode.physicsBody = SCNPhysicsBody(type: .kinematic, shape: floorPhysicsShape)
+        floorNode.physicsBody = SCNPhysicsBody(type: .static, shape: floorPhysicsShape)
         
         scene.rootNode.addChildNode(floorNode)
         
@@ -87,11 +87,11 @@ class GameViewController: UIViewController {
     }
     
     func newCoin() -> SCNNode {
-        let coin = SCNCylinder(radius: 0.8, height: 0.08)
+        let coin = SCNCylinder(radius: 0.8, height: 0.16)
         coin.firstMaterial?.lightingModel = .physicallyBased
-        coin.firstMaterial?.diffuse.contents = UIColor(red: 0.85, green: 0.82, blue: 0.58, alpha: 1.0)
-        coin.firstMaterial?.roughness.contents = NSNumber(value: 0.4)
-        coin.firstMaterial?.metalness.contents = NSNumber(value: 0.8)
+        coin.firstMaterial?.diffuse.contents = UIColor(red: 0.67, green: 0.60, blue: 0.37, alpha: 1.0)
+        coin.firstMaterial?.roughness.contents = NSNumber(value: 0.5)
+        coin.firstMaterial?.metalness.contents = NSNumber(value: 1.0)
         
         let coinFaceImage = UIImage(named: "art.scnassets/coin_normal_map.png")
         coin.firstMaterial?.normal.contents = coinFaceImage
@@ -107,8 +107,10 @@ class GameViewController: UIViewController {
         coinNode.physicsBody?.damping = 0.1
         coinNode.physicsBody?.angularDamping = 0.4
         
-        let coinTorque = SCNVector4(x: 0.5, y: 0.2, z: 0.2, w: 1.0)
+        let randomPerc = CGFloat(arc4random()) / CGFloat(UInt32.max)
+        let coinTorque = SCNVector4(x: Float(randomPerc - 0.5), y: Float(randomPerc - 0.5), z: Float(randomPerc - 0.5), w: 0.75)
         coinNode.physicsBody?.applyTorque(coinTorque, asImpulse: true)
+        coinNode.physicsBody?.applyForce(SCNVector3(Float(randomPerc/2 - 0.25), -2, Float(randomPerc/2 - 0.25)), asImpulse: true)
         
         return coinNode
     }
@@ -123,7 +125,7 @@ class GameViewController: UIViewController {
     
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         if UIDevice.current.userInterfaceIdiom == .phone {
-            return .allButUpsideDown
+            return .portrait
         } else {
             return .all
         }
