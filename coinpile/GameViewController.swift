@@ -83,7 +83,13 @@ class GameViewController: UIViewController {
         let scnView = self.view as! SCNView
         
         // spawn a coin
-        scnView.scene?.rootNode.addChildNode(newCoin())
+        let coins = 10
+        
+        for i in 1...coins {
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(150 * i), execute: {
+                scnView.scene?.rootNode.addChildNode(self.newCoin())
+            })
+        }
     }
     
     func newCoin() -> SCNNode {
