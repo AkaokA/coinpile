@@ -89,12 +89,12 @@ class GameViewController: UIViewController {
     func newCoin() -> SCNNode {
         let coin = SCNCylinder(radius: 0.8, height: 0.16)
         coin.firstMaterial?.lightingModel = .physicallyBased
-        coin.firstMaterial?.diffuse.contents = UIColor(red: 0.67, green: 0.60, blue: 0.37, alpha: 1.0)
+        coin.firstMaterial?.diffuse.contents = UIImage(named: "art.scnassets/coin_texture.png")
         coin.firstMaterial?.roughness.contents = NSNumber(value: 0.5)
         coin.firstMaterial?.metalness.contents = NSNumber(value: 1.0)
         
-        let coinFaceImage = UIImage(named: "art.scnassets/coin_normal_map.png")
-        coin.firstMaterial?.normal.contents = coinFaceImage
+        let coinNormalMap = UIImage(named: "art.scnassets/coin_normal_map.png")
+        coin.firstMaterial?.normal.contents = coinNormalMap
         
         let coinNode = SCNNode(geometry: coin)
         coinNode.position = SCNVector3(x: 0.0, y: 15.0, z: 0.0)
