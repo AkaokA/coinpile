@@ -78,16 +78,25 @@ class GameViewController: UIViewController {
         
     }
     
+    var tapEnabled = true
     @objc func handleTap(_ gestureRecognize: UIGestureRecognizer) {
-        // retrieve the SCNView
-        let scnView = self.view as! SCNView
         
-        // spawn a coin
-        let coins = 10
-        
-        for i in 1...coins {
-            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(150 * i), execute: {
-                scnView.scene?.rootNode.addChildNode(self.newCoin())
+        if tapEnabled {
+            tapEnabled = false
+            
+            // retrieve the SCNView
+            let scnView = self.view as! SCNView
+            let coinPeriod = 150
+            let coins = 10
+            let now = DispatchTime.now()
+            for i in 0...coins {
+                DispatchQueue.main.asyncAfter(deadline: now + .milliseconds(coinPeriod * i), execute: {
+                    // spawn coin
+                    scnView.scene?.rootNode.addChildNode(self.newCoin())
+                })
+            }
+            DispatchQueue.main.asyncAfter(deadline: now + .milliseconds(coinPeriod * coins), execute: {
+                self.tapEnabled = true
             })
         }
     }
@@ -116,7 +125,7 @@ class GameViewController: UIViewController {
         let randomPerc = CGFloat(arc4random()) / CGFloat(UInt32.max)
         let coinTorque = SCNVector4(x: Float(randomPerc - 0.5), y: Float(randomPerc - 0.5), z: Float(randomPerc - 0.5), w: 0.75)
         coinNode.physicsBody?.applyTorque(coinTorque, asImpulse: true)
-        coinNode.physicsBody?.applyForce(SCNVector3(Float(randomPerc/2 - 0.25), -2, Float(randomPerc/2 - 0.25)), asImpulse: true)
+        coinNode.physicsBody?.applyForce(SCNVector3(Float(randomPerc/2 - 0.25), -3, Float(randomPerc/2 - 0.25)), asImpulse: true)
         
         return coinNode
     }
