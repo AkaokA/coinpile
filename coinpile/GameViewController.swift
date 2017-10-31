@@ -78,32 +78,40 @@ class GameViewController: UIViewController {
         
     }
     
-    var tapEnabled = true
+    var coinsAreFlowing = false
+    var timer = Timer()
+    
     @objc func handleTap(_ gestureRecognize: UIGestureRecognizer) {
-        
-        if tapEnabled {
-            tapEnabled = false
-            
-            // retrieve the SCNView
-            let scnView = self.view as! SCNView
-            let coinPeriod = 150
-            let coins = 10
-            let now = DispatchTime.now()
-            for i in 0...coins {
-                DispatchQueue.main.asyncAfter(deadline: now + .milliseconds(coinPeriod * i), execute: {
-                    // spawn coin
-                    scnView.scene?.rootNode.addChildNode(self.newCoin())
-                })
+        if coinsAreFlowing {
+            timer.invalidate()
+            timer = Timer()
+            coinsAreFlowing = false
+        } else {
+            self.dropCoins()
+            timer = Timer.scheduledTimer(withTimeInterval: 1.5, repeats: true) { _ in
+                self.dropCoins()
             }
-            DispatchQueue.main.asyncAfter(deadline: now + .milliseconds(coinPeriod * coins), execute: {
-                self.tapEnabled = true
+            coinsAreFlowing = true
+        }
+    }
+    
+    func dropCoins() {
+        // retrieve the SCNView
+        let scnView = self.view as! SCNView
+        let coinPeriod = 150
+        let coins = 10
+        let now = DispatchTime.now()
+        for i in 0...coins {
+            DispatchQueue.main.asyncAfter(deadline: now + .milliseconds(coinPeriod * i), execute: {
+                // spawn coin
+                scnView.scene?.rootNode.addChildNode(self.newCoin())
             })
         }
     }
     
     func newCoin() -> SCNNode {
         let coin = SCNCylinder(radius: 0.8, height: 0.16)
-        coin.radialSegmentCount = 20
+        coin.radialSegmentCount = 16
         
         coin.firstMaterial?.lightingModel = .physicallyBased
         coin.firstMaterial?.diffuse.contents = UIImage(named: "art.scnassets/coin_texture.png")
