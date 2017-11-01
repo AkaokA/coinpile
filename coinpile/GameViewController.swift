@@ -11,7 +11,10 @@ import QuartzCore
 import SceneKit
 
 class GameViewController: UIViewController {
-
+    
+    var coinsAreFlowing = false
+    var timer = Timer()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -76,10 +79,14 @@ class GameViewController: UIViewController {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
         scnView.addGestureRecognizer(tapGesture)
         
+        timer = Timer.scheduledTimer(withTimeInterval: 1.5, repeats: true) { _ in
+            self.dropCoins()
+        }
+        coinsAreFlowing = true
+
     }
     
-    var coinsAreFlowing = false
-    var timer = Timer()
+
     
     @objc func handleTap(_ gestureRecognize: UIGestureRecognizer) {
         if coinsAreFlowing {
