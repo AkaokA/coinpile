@@ -1,22 +1,114 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13122.16" systemVersion="17A278a" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BV1-FR-VrT">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13528" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BV1-FR-VrT">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13104.12"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13526"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
+    <customFonts key="customFonts">
+        <array key="FuturaBT-Heavy.ttf">
+            <string>FuturaBT-Heavy</string>
+        </array>
+    </customFonts>
     <scenes>
         <!--Game View Controller-->
         <scene sceneID="tXr-a1-R10">
             <objects>
-                <viewController id="BV1-FR-VrT" customClass="GameViewController" customModuleProvider="target" sceneMemberID="viewController">
-                    <sceneKitView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" id="3se-qz-xqx">
+                <viewController id="BV1-FR-VrT" customClass="GameViewController" customModule="coinpile" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Voc-KS-GeC" customClass="SCNView">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                    </sceneKitView>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="All set!" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XHk-O9-j69">
+                                <rect key="frame" x="30" y="140" width="315" height="40"/>
+                                <fontDescription key="fontDescription" name="FuturaBT-Heavy" family="Futura BT" pointSize="40"/>
+                                <color key="textColor" red="0.28235294117647058" green="0.30196078431372547" blue="0.30980392156862746" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fdY-CD-YdM">
+                                <rect key="frame" x="30" y="200" width="315" height="72"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="72" id="AN1-Av-CTz"/>
+                                </constraints>
+                                <attributedString key="attributedText">
+                                    <fragment content="Your contribution has been submitted and your funds will appear in your account tomorrow.">
+                                        <attributes>
+                                            <color key="NSColor" red="0.59999999999999998" green="0.56470588235294117" blue="0.54117647058823526" alpha="1" colorSpace="calibratedRGB"/>
+                                            <font key="NSFont" size="17" name="FuturaBT-Book"/>
+                                            <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="truncatingTail" baseWritingDirection="natural" lineHeightMultiple="1.3999999999999999" tighteningFactorForTruncation="0.0"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="tGN-CA-dzb">
+                                <rect key="frame" x="0.0" y="595" width="375" height="72"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="464-wv-NoC">
+                                        <rect key="frame" x="30" y="14" width="315" height="44"/>
+                                        <color key="backgroundColor" red="0.98039215686274506" green="0.69411764705882351" blue="0.19215686274509802" alpha="1" colorSpace="calibratedRGB"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="44" id="PO6-DH-Y79"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" name="FuturaBT-Heavy" family="Futura BT" pointSize="17"/>
+                                        <color key="tintColor" red="0.98039215686274506" green="0.69411764705882351" blue="0.19215686274509802" alpha="1" colorSpace="calibratedRGB"/>
+                                        <state key="normal" title="Congratulations">
+                                            <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                        </state>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                                <integer key="value" value="22"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
+                                    </button>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qEx-L3-Ynl">
+                                        <rect key="frame" x="0.0" y="0.0" width="375" height="1"/>
+                                        <color key="backgroundColor" red="0.89803921568627454" green="0.8901960784313725" blue="0.88627450980392153" alpha="1" colorSpace="calibratedRGB"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="0.5" id="POJ-DK-pKv"/>
+                                        </constraints>
+                                    </view>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstItem="464-wv-NoC" firstAttribute="centerY" secondItem="tGN-CA-dzb" secondAttribute="centerY" id="2uT-0m-UMG"/>
+                                    <constraint firstAttribute="trailing" secondItem="464-wv-NoC" secondAttribute="trailing" constant="30" id="71Y-Kk-vnn"/>
+                                    <constraint firstItem="qEx-L3-Ynl" firstAttribute="leading" secondItem="tGN-CA-dzb" secondAttribute="leading" id="Pzw-sD-P7G"/>
+                                    <constraint firstAttribute="height" constant="72" id="QtZ-Cd-htA"/>
+                                    <constraint firstAttribute="trailing" secondItem="qEx-L3-Ynl" secondAttribute="trailing" id="d24-sU-MHJ"/>
+                                    <constraint firstItem="464-wv-NoC" firstAttribute="leading" secondItem="tGN-CA-dzb" secondAttribute="leading" constant="30" id="oxy-7i-f87"/>
+                                    <constraint firstItem="qEx-L3-Ynl" firstAttribute="top" secondItem="tGN-CA-dzb" secondAttribute="top" id="wz9-F4-yQC"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="iLQ-Vs-luK" firstAttribute="trailing" secondItem="fdY-CD-YdM" secondAttribute="trailing" constant="30" id="0He-AD-BJw"/>
+                            <constraint firstItem="tGN-CA-dzb" firstAttribute="leading" secondItem="Voc-KS-GeC" secondAttribute="leading" id="1jP-6q-Zwo"/>
+                            <constraint firstItem="iLQ-Vs-luK" firstAttribute="trailing" secondItem="XHk-O9-j69" secondAttribute="trailing" constant="30" id="4P2-F9-APL"/>
+                            <constraint firstItem="XHk-O9-j69" firstAttribute="top" secondItem="iLQ-Vs-luK" secondAttribute="top" constant="120" id="4kY-0D-qPb"/>
+                            <constraint firstItem="fdY-CD-YdM" firstAttribute="top" secondItem="XHk-O9-j69" secondAttribute="bottom" constant="20" id="Okz-gN-jmS"/>
+                            <constraint firstItem="fdY-CD-YdM" firstAttribute="leading" secondItem="iLQ-Vs-luK" secondAttribute="leading" constant="30" id="d0n-k6-k4B"/>
+                            <constraint firstItem="iLQ-Vs-luK" firstAttribute="bottom" secondItem="tGN-CA-dzb" secondAttribute="bottom" id="tf4-2G-fwG"/>
+                            <constraint firstItem="XHk-O9-j69" firstAttribute="leading" secondItem="iLQ-Vs-luK" secondAttribute="leading" constant="30" id="txM-Sm-duT"/>
+                            <constraint firstAttribute="trailing" secondItem="tGN-CA-dzb" secondAttribute="trailing" id="u6w-xO-NwQ"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="iLQ-Vs-luK"/>
+                    </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="SZV-WD-TEh" sceneMemberID="firstResponder"/>
+                <view contentMode="scaleToFill" id="ubn-yw-jkl" userLabel="Overlay">
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    <viewLayoutGuide key="safeArea" id="oOl-eY-Q2d"/>
+                </view>
             </objects>
+            <point key="canvasLocation" x="136.80000000000001" y="133.5832083958021"/>
         </scene>
     </scenes>
 </document>
