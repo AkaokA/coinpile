@@ -132,7 +132,7 @@ class GameViewController: UIViewController {
         coinNode.physicsBody?.applyTorque(coinTorque, asImpulse: true)
         coinNode.physicsBody?.applyForce(coinForce, asImpulse: true)
         
-        let coinTimer = Timer.scheduledTimer(withTimeInterval: 20, repeats: true) { _ in
+        Timer.scheduledTimer(withTimeInterval: 20, repeats: true) { _ in
             coinNode.physicsBody?.type = .static
         }
         
