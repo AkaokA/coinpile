@@ -80,15 +80,14 @@ class GameViewController: UIViewController {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
         scnView.addGestureRecognizer(tapGesture)
         
-        timer = Timer.scheduledTimer(withTimeInterval: 0.15, repeats: true) { _ in
+        timer = Timer.scheduledTimer(withTimeInterval: 0.150, repeats: true) { _ in
             scene.rootNode.addChildNode(self.newCoin())
         }
+        coinsAreFlowing = true
         
-        globalTimer = Timer.scheduledTimer(withTimeInterval: 60, repeats: false) { _ in
+        globalTimer = Timer.scheduledTimer(withTimeInterval: 30, repeats: false) { _ in
             self.timer.invalidate()
         }
-        coinsAreFlowing = true
-
     }
     
     @objc func handleTap(_ gestureRecognize: UIGestureRecognizer) {
