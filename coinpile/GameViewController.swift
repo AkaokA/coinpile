@@ -14,6 +14,7 @@ class GameViewController: UIViewController {
     
     var coinsAreFlowing = false
     var timer = Timer()
+    var globalTimer = Timer()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,7 +28,7 @@ class GameViewController: UIViewController {
         scene.rootNode.addChildNode(cameraNode)
         
         // place the camera
-        cameraNode.position = SCNVector3(x: 0, y: 10, z: 16)
+        cameraNode.position = SCNVector3(x: 0, y: 6, z: 12)
         cameraNode.eulerAngles = SCNVector3Make(-Float.pi/8, 0, 0);
         
         // create and add a light to the scene
@@ -49,7 +50,7 @@ class GameViewController: UIViewController {
         scene.physicsWorld.speed = 1.0
         
         // configure floor node
-        let floor = SCNBox(width: 50, height: 5, length: 50, chamferRadius: 0.0)
+        let floor = SCNBox(width: 100, height: 5, length: 100, chamferRadius: 0.0)
         floor.firstMaterial?.lightingModel = .constant
         floor.firstMaterial?.diffuse.contents = UIColor(red: 0.97, green: 0.97, blue: 0.96, alpha: 1.0)
         
@@ -79,46 +80,35 @@ class GameViewController: UIViewController {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
         scnView.addGestureRecognizer(tapGesture)
         
-        timer = Timer.scheduledTimer(withTimeInterval: 1.5, repeats: true) { _ in
-            self.dropCoins()
+        timer = Timer.scheduledTimer(withTimeInterval: 0.15, repeats: true) { _ in
+            scene.rootNode.addChildNode(self.newCoin())
+        }
+        
+        globalTimer = Timer.scheduledTimer(withTimeInterval: 60, repeats: false) { _ in
+            self.timer.invalidate()
         }
         coinsAreFlowing = true
 
     }
     
-
-    
     @objc func handleTap(_ gestureRecognize: UIGestureRecognizer) {
+        let scnView = self.view as! SCNView
+        
         if coinsAreFlowing {
             timer.invalidate()
             timer = Timer()
             coinsAreFlowing = false
         } else {
-            self.dropCoins()
-            timer = Timer.scheduledTimer(withTimeInterval: 1.5, repeats: true) { _ in
-                self.dropCoins()
+            timer = Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true) { _ in
+                scnView.scene?.rootNode.addChildNode(self.newCoin())
             }
             coinsAreFlowing = true
         }
     }
     
-    func dropCoins() {
-        // retrieve the SCNView
-        let scnView = self.view as! SCNView
-        let coinPeriod = 150
-        let coins = 10
-        let now = DispatchTime.now()
-        for i in 0...coins {
-            DispatchQueue.main.asyncAfter(deadline: now + .milliseconds(coinPeriod * i), execute: {
-                // spawn coin
-                scnView.scene?.rootNode.addChildNode(self.newCoin())
-            })
-        }
-    }
-    
     func newCoin() -> SCNNode {
         let coin = SCNCylinder(radius: 0.8, height: 0.16)
-        coin.radialSegmentCount = 16
+        coin.radialSegmentCount = 32
         
         coin.firstMaterial?.lightingModel = .physicallyBased
         coin.firstMaterial?.diffuse.contents = UIImage(named: "art.scnassets/coin_texture.png")
@@ -132,15 +122,20 @@ class GameViewController: UIViewController {
         let coinPhysicsShape = SCNPhysicsShape(geometry: coin, options: nil)
         coinNode.physicsBody = SCNPhysicsBody(type: .dynamic, shape: coinPhysicsShape)
         coinNode.physicsBody?.mass = 0.2
-        coinNode.physicsBody?.friction = 0.8
+        coinNode.physicsBody?.friction = 1
         coinNode.physicsBody?.rollingFriction = 0.1
         coinNode.physicsBody?.damping = 0.1
-        coinNode.physicsBody?.angularDamping = 0.4
+        coinNode.physicsBody?.angularDamping = 0.25
         
         let randomPerc = CGFloat(arc4random()) / CGFloat(UInt32.max)
-        let coinTorque = SCNVector4(x: Float(randomPerc - 0.5), y: Float(randomPerc - 0.5), z: Float(randomPerc - 0.5), w: 0.75)
+        let coinTorque = SCNVector4(x: Float(randomPerc - 0.5), y: Float(randomPerc - 0.5), z: Float(randomPerc - 0.5), w: 1)
+        let coinForce = SCNVector3(x: Float(randomPerc - 0.5), y: -3, z: Float(randomPerc - 0.5))
         coinNode.physicsBody?.applyTorque(coinTorque, asImpulse: true)
-        coinNode.physicsBody?.applyForce(SCNVector3(Float(randomPerc/2 - 0.25), -3, Float(randomPerc/2 - 0.25)), asImpulse: true)
+        coinNode.physicsBody?.applyForce(coinForce, asImpulse: true)
+        
+        let coinTimer = Timer.scheduledTimer(withTimeInterval: 20, repeats: true) { _ in
+            coinNode.physicsBody?.type = .static
+        }
         
         return coinNode
     }
