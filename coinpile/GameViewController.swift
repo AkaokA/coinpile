@@ -148,14 +148,18 @@ class GameViewController: UIViewController {
         
         if let MotionData = self.motionManager.deviceMotion?.userAcceleration {
             accelVector = SCNVector3(x: Float(MotionData.x), y: Float(MotionData.y), z: Float(MotionData.z))
-            let accelStrength = sqrtf( powf(accelVector.x, 2) + powf(accelVector.y, 2) + powf(accelVector.z, 2) )
+            var accelStrength = sqrtf( powf(accelVector.x, 2) + powf(accelVector.y, 2) + powf(accelVector.z, 2) )
             
             let scnView = self.view as! SCNView
             
             let globalForceNode = scnView.scene?.rootNode.childNode(withName: "globalForceNode", recursively: false)
             globalForceNode?.physicsField?.direction = accelVector
-            globalForceNode?.physicsField?.strength = CGFloat(accelStrength * 35)
             
+            let maxStrength = Float(1.5)
+            if accelStrength > maxStrength {
+                accelStrength = maxStrength
+            }
+            globalForceNode?.physicsField?.strength = CGFloat(accelStrength * 40)
         }
     }
     
@@ -190,7 +194,7 @@ class GameViewController: UIViewController {
         let coinPhysicsShape = SCNPhysicsShape(geometry: coin, options: nil)
         coinNode.physicsBody = SCNPhysicsBody(type: .dynamic, shape: coinPhysicsShape)
         coinNode.physicsBody?.mass = 1.0
-        coinNode.physicsBody?.friction = 0.5
+        coinNode.physicsBody?.friction = 0.25
         coinNode.physicsBody?.rollingFriction = 0.2
         coinNode.physicsBody?.damping = 0.1
         coinNode.physicsBody?.angularDamping = 0.25
