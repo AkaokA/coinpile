@@ -95,7 +95,7 @@ class GameViewController: UIViewController {
         scene.rootNode.addChildNode(rightWallNode)
         
         // configure physics simulation
-        scene.physicsWorld.speed = 1.0
+        scene.physicsWorld.gravity = SCNVector3Zero
         
         // global forces
         let globalForceNode = SCNNode()
@@ -136,7 +136,7 @@ class GameViewController: UIViewController {
         
         
 
-        motionManager.startDeviceMotionUpdates()
+        motionManager.startAccelerometerUpdates()
         _ = Timer.scheduledTimer(withTimeInterval: 0.01667, repeats: true) { _ in
             self.motionUpdate()
         }
@@ -146,7 +146,7 @@ class GameViewController: UIViewController {
     var accelVector = SCNVector3()
     @objc func motionUpdate() {
         
-        if let MotionData = self.motionManager.deviceMotion?.userAcceleration {
+        if let MotionData = self.motionManager.accelerometerData?.acceleration {
             accelVector = SCNVector3(x: Float(MotionData.x), y: Float(MotionData.y), z: Float(MotionData.z))
             let accelStrength = sqrtf( powf(accelVector.x, 2) + powf(accelVector.y, 2) + powf(accelVector.z, 2) )
             
@@ -154,7 +154,7 @@ class GameViewController: UIViewController {
             
             let globalForceNode = scnView.scene?.rootNode.childNode(withName: "globalForceNode", recursively: false)
             globalForceNode?.physicsField?.direction = accelVector
-            globalForceNode?.physicsField?.strength = CGFloat(accelStrength * 35)
+            globalForceNode?.physicsField?.strength = CGFloat(accelStrength * 9.8)
             
         }
     }
