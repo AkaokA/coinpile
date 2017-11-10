@@ -31,7 +31,7 @@ class GameViewController: UIViewController {
         scene.rootNode.addChildNode(cameraNode)
         
         // place the camera
-        cameraNode.position = SCNVector3(x: 0, y: 0.25, z: 3)
+        cameraNode.position = SCNVector3(x: 0, y: 0.2, z: 3)
         cameraNode.eulerAngles = SCNVector3(x: -Float.pi/8, y: 0, z: 0)
         
         // create and add a light to the scene
@@ -73,7 +73,7 @@ class GameViewController: UIViewController {
         let wallPhysicsShape = SCNPhysicsShape(geometry: wall, options: nil)
         
         let backWallNode = SCNNode(geometry: wall)
-        backWallNode.position = SCNVector3(x: 0.0, y: 0.0, z: -1.5)
+        backWallNode.position = SCNVector3(x: 0.0, y: 0.0, z: -1.25)
         backWallNode.physicsBody = SCNPhysicsBody(type: .static, shape: wallPhysicsShape)
         scene.rootNode.addChildNode(backWallNode)
         
@@ -130,7 +130,7 @@ class GameViewController: UIViewController {
         }
         coinsAreFlowing = true
         
-        globalTimer = Timer.scheduledTimer(withTimeInterval: 30, repeats: false) { _ in
+        globalTimer = Timer.scheduledTimer(withTimeInterval: 15, repeats: false) { _ in
             self.timer.invalidate()
         }
         
@@ -154,7 +154,7 @@ class GameViewController: UIViewController {
             
             let globalForceNode = scnView.scene?.rootNode.childNode(withName: "globalForceNode", recursively: false)
             globalForceNode?.physicsField?.direction = accelVector
-            globalForceNode?.physicsField?.strength = CGFloat(accelStrength * 9.8)
+            globalForceNode?.physicsField?.strength = CGFloat(accelStrength * 35)
             
         }
     }
@@ -191,12 +191,12 @@ class GameViewController: UIViewController {
         coinNode.physicsBody = SCNPhysicsBody(type: .dynamic, shape: coinPhysicsShape)
         coinNode.physicsBody?.mass = 1.0
         coinNode.physicsBody?.friction = 0.5
-        coinNode.physicsBody?.rollingFriction = 0.1
+        coinNode.physicsBody?.rollingFriction = 0.2
         coinNode.physicsBody?.damping = 0.1
         coinNode.physicsBody?.angularDamping = 0.25
         
         let randomPerc = CGFloat(arc4random()) / CGFloat(UInt32.max)
-        let coinTorque = SCNVector4(x: Float(randomPerc - randomPerc/2), y: Float(randomPerc - randomPerc/2), z: Float(randomPerc - randomPerc/2), w: 0.5)
+        let coinTorque = SCNVector4(x: Float(randomPerc - randomPerc/2), y: Float(randomPerc - randomPerc/2), z: Float(randomPerc - randomPerc/2), w: 1.0)
         coinNode.physicsBody?.applyTorque(coinTorque, asImpulse: true)
         
 //        Timer.scheduledTimer(withTimeInterval: 10, repeats: true) { _ in
