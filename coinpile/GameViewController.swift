@@ -11,12 +11,10 @@ import QuartzCore
 import SceneKit
 import CoreMotion
 
-class GameViewController: UIViewController {
+class GameViewController: UIViewController, SCNSceneRendererDelegate {
     
-    var coinsAreFlowing = false
-    var timer = Timer()
-    var globalTimer = Timer()
     let motionManager = CMMotionManager()
+    var accelVector = SCNVector3()
     let bgColor = UIColor(red: 0.97, green: 0.97, blue: 0.96, alpha: 1.0)
     
     override func viewDidLoad() {
@@ -60,7 +58,7 @@ class GameViewController: UIViewController {
         scene.rootNode.addChildNode(floorNode)
         
         let ceilingNode = SCNNode(geometry: floor)
-        ceilingNode.position = SCNVector3(x: 0.0, y: 2.5, z: 0.0)
+        ceilingNode.position = SCNVector3(x: 0.0, y: 1.75, z: 0.0)
         ceilingNode.physicsBody = SCNPhysicsBody(type: .static, shape: floorPhysicsShape)
         scene.rootNode.addChildNode(ceilingNode)
         
@@ -73,7 +71,7 @@ class GameViewController: UIViewController {
         let wallPhysicsShape = SCNPhysicsShape(geometry: wall, options: nil)
         
         let backWallNode = SCNNode(geometry: wall)
-        backWallNode.position = SCNVector3(x: 0.0, y: 0.0, z: -1.25)
+        backWallNode.position = SCNVector3(x: 0.0, y: 0.0, z: -1)
         backWallNode.physicsBody = SCNPhysicsBody(type: .static, shape: wallPhysicsShape)
         scene.rootNode.addChildNode(backWallNode)
         
@@ -108,9 +106,8 @@ class GameViewController: UIViewController {
         
         // set the scene to the view
         scnView.scene = scene
-        
-        // allows the user to manipulate the camera
-//        scnView.allowsCameraControl = true
+        scnView.delegate = self
+        scnView.isPlaying = true
         
         // show statistics such as fps and timing information
 //        scnView.showsStatistics = true
@@ -118,39 +115,30 @@ class GameViewController: UIViewController {
         // configure the view
         scnView.backgroundColor = bgColor
         
-        
-        
-        
-        // add a tap gesture recognizer
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
-        scnView.addGestureRecognizer(tapGesture)
-        
-        timer = Timer.scheduledTimer(withTimeInterval: 0.150, repeats: true) { _ in
+        // start dropping coins
+        let timer = Timer.scheduledTimer(withTimeInterval: 1/7, repeats: true) { _ in
             scene.rootNode.addChildNode(self.newCoin())
         }
-        coinsAreFlowing = true
         
-        globalTimer = Timer.scheduledTimer(withTimeInterval: 15, repeats: false) { _ in
-            self.timer.invalidate()
+        // stop dropping coins after a while
+        _ = Timer.scheduledTimer(withTimeInterval: 15, repeats: false) { _ in
+           timer.invalidate()
         }
         
-        
-
+        // poll accelerometer
         motionManager.startDeviceMotionUpdates()
-        _ = Timer.scheduledTimer(withTimeInterval: 0.01667, repeats: true) { _ in
-            self.motionUpdate()
-        }
-
     }
     
-    var accelVector = SCNVector3()
-    @objc func motionUpdate() {
+    func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
+        self.motionUpdate()
+    }
+    
+    func motionUpdate() {
+        let scnView = self.view as! SCNView
         
         if let MotionData = self.motionManager.deviceMotion?.userAcceleration {
             accelVector = SCNVector3(x: Float(MotionData.x), y: Float(MotionData.y), z: Float(MotionData.z))
             var accelStrength = sqrtf( powf(accelVector.x, 2) + powf(accelVector.y, 2) + powf(accelVector.z, 2) )
-            
-            let scnView = self.view as! SCNView
             
             let globalForceNode = scnView.scene?.rootNode.childNode(withName: "globalForceNode", recursively: false)
             globalForceNode?.physicsField?.direction = accelVector
@@ -159,22 +147,7 @@ class GameViewController: UIViewController {
             if accelStrength > maxStrength {
                 accelStrength = maxStrength
             }
-            globalForceNode?.physicsField?.strength = CGFloat(accelStrength * 40)
-        }
-    }
-    
-    @objc func handleTap(_ gestureRecognize: UIGestureRecognizer) {
-        let scnView = self.view as! SCNView
-        
-        if coinsAreFlowing {
-            timer.invalidate()
-            timer = Timer()
-            coinsAreFlowing = false
-        } else {
-            timer = Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true) { _ in
-                scnView.scene?.rootNode.addChildNode(self.newCoin())
-            }
-            coinsAreFlowing = true
+            globalForceNode?.physicsField?.strength = CGFloat(accelStrength * 50)
         }
     }
     
@@ -189,25 +162,24 @@ class GameViewController: UIViewController {
         coin.firstMaterial?.metalness.contents = NSNumber(value: 1.0)
         
         let coinNode = SCNNode(geometry: coin)
-        coinNode.position = SCNVector3(x: 0.0, y: 2.0, z: 0.0)
+        coinNode.position = SCNVector3(x: 0.0, y: 1.5, z: 0.5)
+        coinNode.eulerAngles = SCNVector3(x: Float.pi * randomAroundZero(), y: Float.pi * randomAroundZero(), z: Float.pi * randomAroundZero())
         
         let coinPhysicsShape = SCNPhysicsShape(geometry: coin, options: nil)
         coinNode.physicsBody = SCNPhysicsBody(type: .dynamic, shape: coinPhysicsShape)
-        coinNode.physicsBody?.mass = 1.0
-        coinNode.physicsBody?.friction = 0.25
-        coinNode.physicsBody?.rollingFriction = 0.2
-        coinNode.physicsBody?.damping = 0.1
-        coinNode.physicsBody?.angularDamping = 0.25
+        coinNode.physicsBody?.friction = 0.5
+        coinNode.physicsBody?.rollingFriction = 0.25
         
-        let randomPerc = CGFloat(arc4random()) / CGFloat(UInt32.max)
-        let coinTorque = SCNVector4(x: Float(randomPerc - randomPerc/2), y: Float(randomPerc - randomPerc/2), z: Float(randomPerc - randomPerc/2), w: 1.0)
+        let coinTorque = SCNVector4(x: randomAroundZero(), y: randomAroundZero(), z: randomAroundZero(), w: 0.25)
         coinNode.physicsBody?.applyTorque(coinTorque, asImpulse: true)
         
-//        Timer.scheduledTimer(withTimeInterval: 10, repeats: true) { _ in
-//            coinNode.physicsBody?.type = .static
-//        }
-        
         return coinNode
+    }
+    
+    func randomAroundZero() -> Float {
+        let randomPerc = CGFloat(arc4random()) / CGFloat(UInt32.max)
+        let randomValue = (randomPerc * 2) - 1
+        return Float(randomValue)
     }
     
     override var shouldAutorotate: Bool {
