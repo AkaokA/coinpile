@@ -174,7 +174,7 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate {
         
         let coinPhysicsShape = SCNPhysicsShape(geometry: coin, options: nil)
         coinNode.physicsBody = SCNPhysicsBody(type: .dynamic, shape: coinPhysicsShape)
-        coinNode.physicsBody?.friction = 0.5
+        coinNode.physicsBody?.friction = 0.4
         coinNode.physicsBody?.rollingFriction = 0.25
         
         let coinTorque = SCNVector4(x: randomAroundZero(), y: randomAroundZero(), z: randomAroundZero(), w: 0.25)
@@ -184,6 +184,7 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate {
     }
     
     func randomAroundZero() -> Float {
+        // generate a random number between -1.0 and 1.0
         let randomPerc = CGFloat(arc4random()) / CGFloat(UInt32.max)
         let randomValue = (randomPerc * 2) - 1
         return Float(randomValue)
