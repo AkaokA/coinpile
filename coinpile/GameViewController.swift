@@ -19,105 +19,27 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // configure view
+        let sceneView = self.view as! SCNView
+        sceneView.delegate = self
+        sceneView.antialiasingMode = .multisampling2X
+        sceneView.backgroundColor = bgColor
+
+        // show statistics such as fps and timing information
+        sceneView.showsStatistics = false
+        
         // create a new scene
         let scene = SCNScene()
+        sceneView.scene = scene
         
-        // create and add a camera to the scene
-        let cameraNode = SCNNode()
-        cameraNode.camera = SCNCamera()
-        scene.rootNode.addChildNode(cameraNode)
+        // set up scene
+        setUpCameraAndLights()
+        setUpWalls()
+        setUpForces()
         
-        // place the camera
-        cameraNode.position = SCNVector3(x: 0, y: 0.2, z: 3)
-        cameraNode.eulerAngles = SCNVector3(x: -Float.pi/8, y: 0, z: 0)
-        
-        // create and add a light to the scene
-        let lightNode = SCNNode()
-        lightNode.light = SCNLight()
-        lightNode.light!.type = .omni
-        lightNode.light?.intensity = 750
-        lightNode.position = SCNVector3(x: -3.0, y: 10.0, z: -3.0)
-        scene.rootNode.addChildNode(lightNode)
-        
-        // create and add an ambient light to the scene
-        let ambientLightNode = SCNNode()
-        ambientLightNode.light = SCNLight()
-        ambientLightNode.light!.type = .ambient
-        ambientLightNode.light!.color = UIColor(hue: 0.0, saturation: 0.0, brightness: 1.0, alpha: 1.0)
-        scene.rootNode.addChildNode(ambientLightNode)
-        
-        let wallWidth:CGFloat = 10
-        let wallHeight:CGFloat = 10
-        let wallThickness:CGFloat = 1
+        // start device motion
+        motionManager.startDeviceMotionUpdates()
 
-        // configure walls
-        let floorShape = SCNBox(width: wallWidth, height: wallThickness, length: wallHeight, chamferRadius: 0.0)
-        floorShape.firstMaterial?.lightingModel = .constant
-        floorShape.firstMaterial?.diffuse.contents = bgColor
-        let floorNode = SCNNode(geometry: floorShape)
-        floorNode.position = SCNVector3(x: 0.0, y: -2.0, z: 0.0)
-        let floorPhysicsShape = SCNPhysicsShape(geometry: floorShape, options: nil)
-        floorNode.physicsBody = SCNPhysicsBody(type: .static, shape: floorPhysicsShape)
-        scene.rootNode.addChildNode(floorNode)
-        
-        let ceilingNode = SCNNode(geometry: floorShape)
-        ceilingNode.position = SCNVector3(x: 0.0, y: 1.75, z: 0.0)
-        ceilingNode.physicsBody = SCNPhysicsBody(type: .static, shape: floorPhysicsShape)
-        scene.rootNode.addChildNode(ceilingNode)
-        
-        let wallShape = SCNBox(width: wallWidth, height: wallHeight, length: wallThickness, chamferRadius: 0)
-        wallShape.firstMaterial?.lightingModel = .constant
-        wallShape.firstMaterial?.diffuse.contents = bgColor
-        let wallPhysicsShape = SCNPhysicsShape(geometry: wallShape, options: nil)
-        
-        let backWallNode = SCNNode(geometry: wallShape)
-        backWallNode.position = SCNVector3(x: 0.0, y: 0.0, z: -0.75)
-        backWallNode.physicsBody = SCNPhysicsBody(type: .static, shape: wallPhysicsShape)
-        scene.rootNode.addChildNode(backWallNode)
-        
-        let frontWallNode = SCNNode(geometry: wallShape)
-        frontWallNode.position = SCNVector3(x: 0.0, y: 0.0, z: 2.0)
-        frontWallNode.physicsBody = SCNPhysicsBody(type: .static, shape: wallPhysicsShape)
-        scene.rootNode.addChildNode(frontWallNode)
-        
-        let sideWallPositionOffset:Float = 1.75
-        let sideWallAngle:Float = Float.pi * 0.42
-        
-        let leftWallNode = SCNNode(geometry: wallShape)
-        leftWallNode.position = SCNVector3(x: -sideWallPositionOffset, y: 0.0, z: 0.0)
-        leftWallNode.eulerAngles = SCNVector3(x: 0, y: -sideWallAngle, z: 0)
-        leftWallNode.physicsBody = SCNPhysicsBody(type: .static, shape: wallPhysicsShape)
-        scene.rootNode.addChildNode(leftWallNode)
-        
-        let rightWallNode = SCNNode(geometry: wallShape)
-        rightWallNode.position = SCNVector3(x: sideWallPositionOffset, y: 0.0, z: 0.0)
-        rightWallNode.eulerAngles = SCNVector3(x: 0, y: sideWallAngle, z: 0)
-        rightWallNode.physicsBody = SCNPhysicsBody(type: .static, shape: wallPhysicsShape)
-        scene.rootNode.addChildNode(rightWallNode)
-        
-        // configure physics simulation
-        scene.physicsWorld.speed = 1.0
-        
-        // global forces
-        let globalForceNode = SCNNode()
-        globalForceNode.name = "globalForceNode"
-        globalForceNode.physicsField = SCNPhysicsField.linearGravity()
-        scene.rootNode.addChildNode(globalForceNode)
-        
-        // retrieve the SCNView
-        let scnView = self.view as! SCNView
-        
-        // set the scene to the view
-        scnView.scene = scene
-        scnView.delegate = self
-        scnView.isPlaying = true
-        
-        // show statistics such as fps and timing information
-        // scnView.showsStatistics = true
-        
-        // configure the view
-        scnView.backgroundColor = bgColor
-        
         // start and stop dropping coins
         let numberOfCoins:Double = 100
         let coinsPerSecond:Double = 8
@@ -131,23 +53,25 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate {
         _ = Timer.scheduledTimer(withTimeInterval: coinFlowDuration, repeats: false) { _ in
            coinFlowTimer.invalidate()
         }
-        
-        // start device motion
-        motionManager.startDeviceMotionUpdates()
     }
     
-    func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
-        self.motionUpdate()
+    func setUpForces() {
+        let sceneView = self.view as! SCNView
+        
+        let globalForceNode = SCNNode()
+        globalForceNode.name = "globalForceNode"
+        globalForceNode.physicsField = SCNPhysicsField.linearGravity()
+        sceneView.scene?.rootNode.addChildNode(globalForceNode)
     }
     
     func motionUpdate() {
-        let scnView = self.view as! SCNView
+        let sceneView = self.view as! SCNView
         
         if let MotionData = self.motionManager.deviceMotion?.userAcceleration {
             let accelVector = SCNVector3(x: Float(MotionData.x), y: Float(MotionData.y), z: Float(MotionData.z))
             var accelStrength = sqrtf( powf(accelVector.x, 2) + powf(accelVector.y, 2) + powf(accelVector.z, 2) )
             
-            let globalForceNode = scnView.scene?.rootNode.childNode(withName: "globalForceNode", recursively: false)
+            let globalForceNode = sceneView.scene?.rootNode.childNode(withName: "globalForceNode", recursively: false)
             globalForceNode?.physicsField?.direction = accelVector
             
             let maxStrength = Float(1.5)
@@ -158,9 +82,95 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate {
         }
     }
     
+    // run every frame
+    func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
+        self.motionUpdate()
+    }
+
+    func setUpCameraAndLights() {
+        let sceneView = self.view as! SCNView
+        
+        // create and add a camera to the scene
+        let cameraNode = SCNNode()
+        cameraNode.camera = SCNCamera()
+        cameraNode.position = SCNVector3(x: 0, y: 0.2, z: 3)
+        cameraNode.eulerAngles = SCNVector3(x: -Float.pi/8, y: 0, z: 0)
+        sceneView.scene?.rootNode.addChildNode(cameraNode)
+        
+        // create and add an ambient light to the scene
+        let ambientLightNode = SCNNode()
+        ambientLightNode.light = SCNLight()
+        ambientLightNode.light!.type = .ambient
+        ambientLightNode.light!.color = UIColor(hue: 0.0, saturation: 0.0, brightness: 1.0, alpha: 1.0)
+        sceneView.scene?.rootNode.addChildNode(ambientLightNode)
+
+        // create and add a light to the scene
+        let lightNode = SCNNode()
+        lightNode.light = SCNLight()
+        lightNode.light!.type = .omni
+        lightNode.light?.intensity = 100
+        lightNode.position = SCNVector3(x: -0.5, y: 2, z: 0.75)
+        sceneView.scene?.rootNode.addChildNode(lightNode)
+    }
+    
+    func setUpWalls() {
+        let sceneView = self.view as! SCNView
+        
+        let wallWidth:CGFloat = 10
+        let wallHeight:CGFloat = 10
+        let wallThickness:CGFloat = 1
+        
+        // configure walls
+        let floorShape = SCNBox(width: wallWidth, height: wallThickness, length: wallHeight, chamferRadius: 0.0)
+        floorShape.firstMaterial?.lightingModel = .constant
+        floorShape.firstMaterial?.diffuse.contents = bgColor
+        let floorNode = SCNNode(geometry: floorShape)
+        floorNode.position = SCNVector3(x: 0.0, y: -2.0, z: 0.0)
+        let floorPhysicsShape = SCNPhysicsShape(geometry: floorShape, options: nil)
+        floorNode.physicsBody = SCNPhysicsBody(type: .static, shape: floorPhysicsShape)
+        
+        let ceilingNode = SCNNode(geometry: floorShape)
+        ceilingNode.position = SCNVector3(x: 0.0, y: 1.75, z: 0.0)
+        ceilingNode.physicsBody = SCNPhysicsBody(type: .static, shape: floorPhysicsShape)
+        
+        let wallShape = SCNBox(width: wallWidth, height: wallHeight, length: wallThickness, chamferRadius: 0)
+        wallShape.firstMaterial?.lightingModel = .constant
+        wallShape.firstMaterial?.diffuse.contents = bgColor
+        let wallPhysicsShape = SCNPhysicsShape(geometry: wallShape, options: nil)
+        
+        let backWallNode = SCNNode(geometry: wallShape)
+        backWallNode.position = SCNVector3(x: 0.0, y: 0.0, z: -1.0)
+        backWallNode.physicsBody = SCNPhysicsBody(type: .static, shape: wallPhysicsShape)
+        
+        let frontWallNode = SCNNode(geometry: wallShape)
+        frontWallNode.position = SCNVector3(x: 0.0, y: 0.0, z: 2.0)
+        frontWallNode.physicsBody = SCNPhysicsBody(type: .static, shape: wallPhysicsShape)
+        
+        let sideWallPositionOffset:Float = 1.75
+        let sideWallAngle:Float = Float.pi * 0.42
+        
+        let leftWallNode = SCNNode(geometry: wallShape)
+        leftWallNode.position = SCNVector3(x: -sideWallPositionOffset, y: 0.0, z: 0.0)
+        leftWallNode.eulerAngles = SCNVector3(x: 0, y: -sideWallAngle, z: 0)
+        leftWallNode.physicsBody = SCNPhysicsBody(type: .static, shape: wallPhysicsShape)
+        
+        let rightWallNode = SCNNode(geometry: wallShape)
+        rightWallNode.position = SCNVector3(x: sideWallPositionOffset, y: 0.0, z: 0.0)
+        rightWallNode.eulerAngles = SCNVector3(x: 0, y: sideWallAngle, z: 0)
+        rightWallNode.physicsBody = SCNPhysicsBody(type: .static, shape: wallPhysicsShape)
+        
+        // add walls to scene
+        sceneView.scene?.rootNode.addChildNode(floorNode)
+        sceneView.scene?.rootNode.addChildNode(ceilingNode)
+        sceneView.scene?.rootNode.addChildNode(backWallNode)
+        sceneView.scene?.rootNode.addChildNode(frontWallNode)
+        sceneView.scene?.rootNode.addChildNode(leftWallNode)
+        sceneView.scene?.rootNode.addChildNode(rightWallNode)
+    }
+    
     func newCoin() -> SCNNode {
         let coin = SCNCylinder(radius: 0.2, height: 0.04)
-        coin.radialSegmentCount = 32
+        coin.radialSegmentCount = 24
         
         coin.firstMaterial?.lightingModel = .physicallyBased
         coin.firstMaterial?.diffuse.contents = UIImage(named: "art.scnassets/coin_texture.png")
@@ -174,7 +184,7 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate {
         
         let coinPhysicsShape = SCNPhysicsShape(geometry: coin, options: nil)
         coinNode.physicsBody = SCNPhysicsBody(type: .dynamic, shape: coinPhysicsShape)
-        coinNode.physicsBody?.friction = 0.4
+        coinNode.physicsBody?.friction = 0.33
         coinNode.physicsBody?.rollingFriction = 0.25
         
         let coinTorque = SCNVector4(x: randomAroundZero(), y: randomAroundZero(), z: randomAroundZero(), w: 0.25)
