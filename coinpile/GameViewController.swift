@@ -57,6 +57,7 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate {
     
     func setUpForces() {
         let sceneView = self.view as! SCNView
+        sceneView.scene?.physicsWorld.timeStep = 1/120
         
         let globalForceNode = SCNNode()
         globalForceNode.name = "globalForceNode"
@@ -95,6 +96,7 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate {
         cameraNode.camera = SCNCamera()
         cameraNode.position = SCNVector3(x: 0, y: 0.2, z: 3)
         cameraNode.eulerAngles = SCNVector3(x: -Float.pi/8, y: 0, z: 0)
+        cameraNode.camera?.motionBlurIntensity = 0.66
         sceneView.scene?.rootNode.addChildNode(cameraNode)
         
         // create and add an ambient light to the scene
@@ -169,12 +171,13 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate {
     }
     
     func newCoin() -> SCNNode {
-        let coin = SCNCylinder(radius: 0.2, height: 0.04)
+        let coin = SCNCylinder(radius: 0.2, height: 0.033)
         coin.radialSegmentCount = 24
         
         coin.firstMaterial?.lightingModel = .physicallyBased
         coin.firstMaterial?.diffuse.contents = UIImage(named: "art.scnassets/coin_texture.png")
         coin.firstMaterial?.normal.contents = UIImage(named: "art.scnassets/coin_normal_map.png")
+        coin.firstMaterial?.ambientOcclusion.contents = UIImage(named: "art.scnassets/coin_ao_map.png")
         coin.firstMaterial?.roughness.contents = NSNumber(value: 0.5)
         coin.firstMaterial?.metalness.contents = NSNumber(value: 1.0)
         
@@ -184,7 +187,7 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate {
         
         let coinPhysicsShape = SCNPhysicsShape(geometry: coin, options: nil)
         coinNode.physicsBody = SCNPhysicsBody(type: .dynamic, shape: coinPhysicsShape)
-        coinNode.physicsBody?.friction = 0.33
+        coinNode.physicsBody?.friction = 0.25
         coinNode.physicsBody?.rollingFriction = 0.25
         
         let coinTorque = SCNVector4(x: randomAroundZero(), y: randomAroundZero(), z: randomAroundZero(), w: 0.25)
