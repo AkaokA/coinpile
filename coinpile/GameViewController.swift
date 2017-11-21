@@ -97,6 +97,11 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate {
         cameraNode.position = SCNVector3(x: 0, y: 0.2, z: 3)
         cameraNode.eulerAngles = SCNVector3(x: -Float.pi/8, y: 0, z: 0)
         cameraNode.camera?.motionBlurIntensity = 0.66
+        
+        cameraNode.camera?.wantsDepthOfField = true
+        cameraNode.camera?.focusDistance = 2.75
+        cameraNode.camera?.fStop = 0.18
+        
         sceneView.scene?.rootNode.addChildNode(cameraNode)
         
         // create and add an ambient light to the scene
@@ -107,12 +112,28 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate {
         sceneView.scene?.rootNode.addChildNode(ambientLightNode)
 
         // create and add a light to the scene
+//        let lightNode = SCNNode()
+//        lightNode.light = SCNLight()
+//        lightNode.light!.type = .omni
+//        lightNode.light?.intensity = 100
+//        lightNode.position = SCNVector3(x: -0.5, y: 2, z: 0.75)
+//        sceneView.scene?.rootNode.addChildNode(lightNode)
+
+        // create and add a light to the scene
         let lightNode = SCNNode()
         lightNode.light = SCNLight()
-        lightNode.light!.type = .omni
+        lightNode.light!.type = .spot
         lightNode.light?.intensity = 100
         lightNode.position = SCNVector3(x: -0.5, y: 2, z: 0.75)
+        lightNode.eulerAngles = SCNVector3(x: -Float.pi/2, y: 0, z: Float.pi/16)
+        lightNode.light?.spotInnerAngle = 45.0
+        lightNode.light?.spotOuterAngle = 90.0
+        lightNode.light?.castsShadow = true
+        lightNode.light?.shadowSampleCount = 10
+        lightNode.light?.shadowRadius = 10.0
+        lightNode.light?.shadowBias = 2.0
         sceneView.scene?.rootNode.addChildNode(lightNode)
+    
     }
     
     func setUpWalls() {
@@ -171,8 +192,8 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate {
     }
     
     func newCoin() -> SCNNode {
-        let coin = SCNCylinder(radius: 0.2, height: 0.033)
-        coin.radialSegmentCount = 24
+        let coin = SCNCylinder(radius: 0.2, height: 0.036)
+        coin.radialSegmentCount = 60
         
         coin.firstMaterial?.lightingModel = .physicallyBased
         coin.firstMaterial?.diffuse.contents = UIImage(named: "art.scnassets/coin_texture.png")
