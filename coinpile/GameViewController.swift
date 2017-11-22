@@ -38,7 +38,7 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate {
         setUpForces()
         
         // start device motion
-        motionManager.startDeviceMotionUpdates()
+        motionManager.startAccelerometerUpdates()
 
         // start and stop dropping coins
         let numberOfCoins:Double = 80
@@ -58,6 +58,7 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate {
     func setUpForces() {
         let sceneView = self.view as! SCNView
         sceneView.scene?.physicsWorld.timeStep = 1/90
+        sceneView.scene?.physicsWorld.gravity = SCNVector3Zero
         
         let globalForceNode = SCNNode()
         globalForceNode.name = "globalForceNode"
@@ -68,7 +69,7 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate {
     func motionUpdate() {
         let sceneView = self.view as! SCNView
         
-        if let MotionData = self.motionManager.deviceMotion?.userAcceleration {
+        if let MotionData = self.motionManager.accelerometerData?.acceleration {
             let accelVector = SCNVector3(x: Float(MotionData.x), y: Float(MotionData.y), z: Float(MotionData.z))
             var accelStrength = sqrtf( powf(accelVector.x, 2) + powf(accelVector.y, 2) + powf(accelVector.z, 2) )
             
@@ -79,7 +80,7 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate {
             if accelStrength > maxStrength {
                 accelStrength = maxStrength
             }
-            globalForceNode?.physicsField?.strength = CGFloat(accelStrength * 50)
+            globalForceNode?.physicsField?.strength = CGFloat(accelStrength * 9.8)
         }
     }
     
@@ -100,7 +101,7 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate {
         cameraNode.camera?.motionBlurIntensity = 0.66
         
         cameraNode.camera?.wantsDepthOfField = true
-        cameraNode.camera?.focusDistance = 2.75
+        cameraNode.camera?.focusDistance = 2.66
         cameraNode.camera?.fStop = 0.18
         sceneView.scene?.rootNode.addChildNode(cameraNode)
         
