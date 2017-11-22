@@ -41,7 +41,7 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate {
         motionManager.startDeviceMotionUpdates()
 
         // start and stop dropping coins
-        let numberOfCoins:Double = 80
+        let numberOfCoins:Double = 100
         let coinsPerSecond:Double = 8
         let coinInterval:Double = 1.0 / coinsPerSecond
         let coinFlowDuration:Double = numberOfCoins/coinsPerSecond
@@ -95,7 +95,7 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate {
         let cameraNode = SCNNode()
         cameraNode.camera = SCNCamera()
         cameraNode.position = SCNVector3(x: 0, y: 0.2, z: 3)
-        cameraNode.eulerAngles = SCNVector3(x: -Float.pi/8, y: 0, z: 0)
+        cameraNode.eulerAngles = SCNVector3(x: -.pi/8, y: 0, z: 0)
         
         cameraNode.camera?.motionBlurIntensity = 0.66
         
@@ -114,7 +114,7 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate {
         // create and add a spotlight to the scene
         let lightNode = SCNNode()
         lightNode.position = SCNVector3(x: -0.5, y: 2, z: 0.75)
-        lightNode.eulerAngles = SCNVector3(x: -Float.pi/2, y: 0, z: Float.pi/16)
+        lightNode.eulerAngles = SCNVector3(x: -.pi/2, y: 0, z: .pi/16)
         
         lightNode.light = SCNLight()
         lightNode.light!.type = .spot
@@ -163,7 +163,7 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate {
         frontWallNode.physicsBody = SCNPhysicsBody(type: .static, shape: wallPhysicsShape)
         
         let sideWallPositionOffset:Float = 1.75
-        let sideWallAngle:Float = Float.pi * 0.42
+        let sideWallAngle:Float = .pi * 0.42
         
         let leftWallNode = SCNNode(geometry: wallShape)
         leftWallNode.position = SCNVector3(x: -sideWallPositionOffset, y: 0.0, z: 0.0)
@@ -197,7 +197,7 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate {
         
         let coinNode = SCNNode(geometry: coin)
         coinNode.position = SCNVector3(x: 0.0, y: 1.5, z: 0.5)
-        coinNode.eulerAngles = SCNVector3(x: Float.pi * randomAroundZero(), y: Float.pi * randomAroundZero(), z: Float.pi * randomAroundZero())
+        coinNode.eulerAngles = SCNVector3(x: .pi * randomAroundZero(), y: .pi * randomAroundZero(), z: .pi * randomAroundZero())
         
         let coinPhysicsShape = SCNPhysicsShape(geometry: coin, options: nil)
         coinNode.physicsBody = SCNPhysicsBody(type: .dynamic, shape: coinPhysicsShape)
