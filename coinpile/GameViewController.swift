@@ -41,7 +41,7 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate {
         motionManager.startDeviceMotionUpdates()
 
         // start and stop dropping coins
-        let numberOfCoins:Double = 100
+        let numberOfCoins:Double = 80
         let coinsPerSecond:Double = 8
         let coinInterval:Double = 1.0 / coinsPerSecond
         let coinFlowDuration:Double = numberOfCoins/coinsPerSecond
@@ -98,6 +98,7 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate {
         cameraNode.eulerAngles = SCNVector3(x: -Float.pi/8, y: 0, z: 0)
         
         cameraNode.camera?.motionBlurIntensity = 0.66
+        
         cameraNode.camera?.wantsDepthOfField = true
         cameraNode.camera?.focusDistance = 2.75
         cameraNode.camera?.fStop = 0.18
