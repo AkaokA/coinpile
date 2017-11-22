@@ -100,7 +100,7 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate {
         cameraNode.camera?.motionBlurIntensity = 0.66
         
         cameraNode.camera?.wantsDepthOfField = true
-        cameraNode.camera?.focusDistance = 2.75
+        cameraNode.camera?.focusDistance = 2.66
         cameraNode.camera?.fStop = 0.18
         sceneView.scene?.rootNode.addChildNode(cameraNode)
         
