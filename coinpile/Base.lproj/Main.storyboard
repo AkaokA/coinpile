@@ -60,7 +60,7 @@
                                         </constraints>
                                         <fontDescription key="fontDescription" name="FuturaBT-Heavy" family="Futura BT" pointSize="17"/>
                                         <color key="tintColor" red="0.98039215686274506" green="0.69411764705882351" blue="0.19215686274509802" alpha="0.79719606164383561" colorSpace="calibratedRGB"/>
-                                        <state key="normal" title="Pat yourself on the back">
+                                        <state key="normal" title="Buckle up">
                                             <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                         </state>
                                         <userDefinedRuntimeAttributes>
@@ -68,6 +68,9 @@
                                                 <integer key="value" value="22"/>
                                             </userDefinedRuntimeAttribute>
                                         </userDefinedRuntimeAttributes>
+                                        <connections>
+                                            <segue destination="wMN-UL-Z4j" kind="presentation" id="ufg-Uu-naB"/>
+                                        </connections>
                                     </button>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qEx-L3-Ynl" userLabel="Top Line">
                                         <rect key="frame" x="0.0" y="0.0" width="375" height="1"/>
@@ -112,6 +115,22 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="SZV-WD-TEh" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="136.80000000000001" y="133.00492610837438"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="EdT-Jy-qXS">
+            <objects>
+                <viewController id="wMN-UL-Z4j" customClass="ViewController" customModule="Coinpile_AR" customModuleProvider="target" sceneMemberID="viewController">
+                    <arscnView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" id="rNm-1G-Sb1">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    </arscnView>
+                    <connections>
+                        <outlet property="sceneView" destination="rNm-1G-Sb1" id="nlk-3f-Jz5"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dnp-He-8oe" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1164" y="133"/>
         </scene>
     </scenes>
 </document>
