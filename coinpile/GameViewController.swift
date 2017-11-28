@@ -23,7 +23,7 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate {
         let sceneView = self.view as! SCNView
         sceneView.delegate = self
         sceneView.antialiasingMode = .multisampling2X
-        sceneView.backgroundColor = bgColor
+        sceneView.backgroundColor = nil
 
         // show statistics such as fps and timing information
         sceneView.showsStatistics = false

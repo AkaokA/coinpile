@@ -90,6 +90,7 @@
                             </view>
                         </subviews>
                         <color key="backgroundColor" red="0.97254901960784312" green="0.97254901960784312" blue="0.96470588235294119" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="tintColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="iLQ-Vs-luK" firstAttribute="trailing" secondItem="fdY-CD-YdM" secondAttribute="trailing" constant="30" id="0He-AD-BJw"/>
                             <constraint firstItem="tGN-CA-dzb" firstAttribute="leading" secondItem="Voc-KS-GeC" secondAttribute="leading" id="1jP-6q-Zwo"/>
