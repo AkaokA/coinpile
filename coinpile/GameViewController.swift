@@ -42,16 +42,18 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate {
 
         // start and stop dropping coins
         let numberOfCoins:Double = 100
-        let coinsPerSecond:Double = 8
+        let coinsPerSecond:Double = 12
         let coinInterval:Double = 1.0 / coinsPerSecond
         let coinFlowDuration:Double = numberOfCoins/coinsPerSecond
+        let startDelay:Double = 1
         
-        let coinFlowTimer = Timer.scheduledTimer(withTimeInterval: coinInterval, repeats: true) { _ in
-            scene.rootNode.addChildNode(self.newCoin())
-        }
-        
-        _ = Timer.scheduledTimer(withTimeInterval: coinFlowDuration, repeats: false) { _ in
-           coinFlowTimer.invalidate()
+        _ = Timer.scheduledTimer(withTimeInterval: startDelay, repeats: false) { _ in
+            let coinFlowTimer = Timer.scheduledTimer(withTimeInterval: coinInterval, repeats: true) { _ in
+                scene.rootNode.addChildNode(self.newCoin())
+            }
+            _ = Timer.scheduledTimer(withTimeInterval: coinFlowDuration, repeats: false) { _ in
+                coinFlowTimer.invalidate()
+            }
         }
     }
     
@@ -137,17 +139,23 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate {
         let wallThickness:CGFloat = 1
         
         // configure walls
-        let floorShape = SCNBox(width: wallWidth, height: wallThickness, length: wallHeight, chamferRadius: 0.0)
+        let floorShape = SCNFloor()
         floorShape.firstMaterial?.lightingModel = .constant
         floorShape.firstMaterial?.diffuse.contents = bgColor
+        floorShape.reflectivity = 0.0
+        floorShape.reflectionFalloffEnd = 0.25
+        floorShape.reflectionResolutionScaleFactor = 0.1
         let floorNode = SCNNode(geometry: floorShape)
-        floorNode.position = SCNVector3(x: 0.0, y: -2.0, z: 0.0)
+        floorNode.position = SCNVector3(x: 0.0, y: -1.5, z: 0.0)
         let floorPhysicsShape = SCNPhysicsShape(geometry: floorShape, options: nil)
         floorNode.physicsBody = SCNPhysicsBody(type: .static, shape: floorPhysicsShape)
         
-        let ceilingNode = SCNNode(geometry: floorShape)
+        let ceilingShape = SCNPlane(width: wallWidth, height: wallHeight)
+        let ceilingNode = SCNNode(geometry: ceilingShape)
         ceilingNode.position = SCNVector3(x: 0.0, y: 1.75, z: 0.0)
-        ceilingNode.physicsBody = SCNPhysicsBody(type: .static, shape: floorPhysicsShape)
+        ceilingNode.eulerAngles = SCNVector3(x: Float.pi/2, y: 0.0, z: 0.0)
+        let ceilingPhysicsShape = SCNPhysicsShape(geometry: ceilingShape, options: nil)
+        ceilingNode.physicsBody = SCNPhysicsBody(type: .static, shape: ceilingPhysicsShape)
         
         let wallShape = SCNBox(width: wallWidth, height: wallHeight, length: wallThickness, chamferRadius: 0)
         wallShape.firstMaterial?.lightingModel = .constant
