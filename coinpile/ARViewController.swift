@@ -71,16 +71,22 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             node = SCNNode()
             // let planeGeometry = SCNPlane(width: CGFloat(planeAnchor.extent.x), height: CGFloat(planeAnchor.extent.z))
             // let planeGeometry = SCNBox(width: CGFloat(planeAnchor.extent.x), height: planeHeight, length: CGFloat(planeAnchor.extent.z), chamferRadius: 0.0)
-            let planeHeight:CGFloat = 0.01
+//            let planeHeight:CGFloat = 0.01
             
-            let planeGeometry = SCNPlane(width: CGFloat(planeAnchor.extent.x), height: CGFloat(planeAnchor.extent.z))
-            planeGeometry.firstMaterial?.diffuse.contents = UIColor.green
-            planeGeometry.firstMaterial?.specular.contents = UIColor.white
+            let planeGeometry = SCNFloor()
+            planeGeometry.firstMaterial?.diffuse.contents = UIColor.clear
+            let planePhysicsShape = SCNPhysicsShape(geometry: planeGeometry, options: nil)
+            
             let planeNode = SCNNode(geometry: planeGeometry)
-            planeNode.position = SCNVector3Make(planeAnchor.center.x, Float(planeHeight / 2), planeAnchor.center.z)
+            planeNode.physicsBody = SCNPhysicsBody(type: .static, shape: planePhysicsShape)
+            planeNode.position = SCNVector3Make(planeAnchor.center.x, planeAnchor.center.y, planeAnchor.center.z)
+            
             //since SCNPlane is vertical, needs to be rotated -90 degrees on X axis to make a plane
-            planeNode.transform = SCNMatrix4MakeRotation(Float(-CGFloat.pi/2), 1, 0, 0)
+//            planeNode.transform = SCNMatrix4MakeRotation(Float(-CGFloat.pi/2), 1, 0, 0)
+            
             node?.addChildNode(planeNode)
+            node?.addChildNode(self.newCoin())
+            
             anchors.append(planeAnchor)
             
         } else {
@@ -131,14 +137,14 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         sceneView.scene?.rootNode.addChildNode(lightNode)
     }
     
-    func dropCoins() {
+    func dropCoins(parentNode:SCNNode) {
         let numberOfCoins:Double = 100
         let coinsPerSecond:Double = 8
         let coinInterval:Double = 1.0 / coinsPerSecond
         let coinFlowDuration:Double = numberOfCoins/coinsPerSecond
         
         let coinFlowTimer = Timer.scheduledTimer(withTimeInterval: coinInterval, repeats: true) { _ in
-            self.sceneView.scene.rootNode.addChildNode(self.newCoin())
+            parentNode.addChildNode(self.newCoin())
         }
         
         _ = Timer.scheduledTimer(withTimeInterval: coinFlowDuration, repeats: false) { _ in
@@ -158,7 +164,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         coin.firstMaterial?.metalness.contents = NSNumber(value: 1.0)
         
         let coinNode = SCNNode(geometry: coin)
-        coinNode.position = SCNVector3(x: 0.0, y: 1.5, z: 0.5)
+        coinNode.position = SCNVector3(x: 0.0, y: 1.5, z: 0.0)
         coinNode.eulerAngles = SCNVector3(x: .pi * randomAroundZero(), y: .pi * randomAroundZero(), z: .pi * randomAroundZero())
         
         let coinPhysicsShape = SCNPhysicsShape(geometry: coin, options: nil)
