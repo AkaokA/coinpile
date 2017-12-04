@@ -15,6 +15,14 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate {
     
     let motionManager = CMMotionManager()
     let bgColor = UIColor(red: 0.97, green: 0.97, blue: 0.96, alpha: 1.0)
+ 
+    // performance constants
+    let antiAliasingEnabled = false
+    let highAccuracyPhysicsEnabled = true
+    let realTimeShadowsEnabled = true
+    let motionBlurEnabled = true
+    let depthOfFieldEnabled = true
+    let numberOfCoins:Double = 150
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -22,8 +30,8 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate {
         // configure view
         let sceneView = self.view as! SCNView
         sceneView.delegate = self
-        sceneView.antialiasingMode = .multisampling2X
-        sceneView.backgroundColor = nil
+        if antiAliasingEnabled { sceneView.antialiasingMode = .multisampling2X }
+        sceneView.backgroundColor = bgColor
 
         // show statistics such as fps and timing information
         sceneView.showsStatistics = false
@@ -41,7 +49,6 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate {
         motionManager.startDeviceMotionUpdates()
 
         // start and stop dropping coins
-        let numberOfCoins:Double = 100
         let coinsPerSecond:Double = 12
         let coinInterval:Double = 1.0 / coinsPerSecond
         let coinFlowDuration:Double = numberOfCoins/coinsPerSecond
@@ -59,8 +66,7 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate {
     
     func setUpForces() {
         let sceneView = self.view as! SCNView
-        sceneView.scene?.physicsWorld.timeStep = 1/90
-        
+        if highAccuracyPhysicsEnabled { sceneView.scene?.physicsWorld.timeStep = 1/90 }
         let globalForceNode = SCNNode()
         globalForceNode.name = "globalForceNode"
         globalForceNode.physicsField = SCNPhysicsField.linearGravity()
@@ -99,11 +105,13 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate {
         cameraNode.position = SCNVector3(x: 0, y: 0.2, z: 3)
         cameraNode.eulerAngles = SCNVector3(x: -.pi/8, y: 0, z: 0)
         
-        cameraNode.camera?.motionBlurIntensity = 0.66
+        if motionBlurEnabled { cameraNode.camera?.motionBlurIntensity = 0.66 }
         
-        cameraNode.camera?.wantsDepthOfField = true
-        cameraNode.camera?.focusDistance = 2.66
-        cameraNode.camera?.fStop = 0.18
+        if depthOfFieldEnabled {
+            cameraNode.camera?.wantsDepthOfField = true
+            cameraNode.camera?.focusDistance = 2.66
+            cameraNode.camera?.fStop = 0.18
+        }
         sceneView.scene?.rootNode.addChildNode(cameraNode)
         
         // create and add an ambient light to the scene
@@ -123,8 +131,8 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate {
         lightNode.light?.intensity = 120
         lightNode.light?.spotInnerAngle = 45.0
         lightNode.light?.spotOuterAngle = 90.0
-        lightNode.light?.castsShadow = true
-        lightNode.light?.shadowSampleCount = 8
+        if realTimeShadowsEnabled { lightNode.light?.castsShadow = true }
+        lightNode.light?.shadowSampleCount = 4
         lightNode.light?.shadowRadius = 2.0
         lightNode.light?.shadowBias = 1.5
         sceneView.scene?.rootNode.addChildNode(lightNode)
