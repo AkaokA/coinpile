@@ -185,7 +185,7 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate {
         frontWallNode.position = SCNVector3(x: 0.0, y: 0.0, z: 2.0)
         frontWallNode.physicsBody = SCNPhysicsBody(type: .static, shape: wallPhysicsShape)
         
-        let sideWallPositionOffset:Float = 1.75
+        let sideWallPositionOffset:Float = 1.5
         let sideWallAngle:Float = .pi * 0.42
         
         let leftWallNode = SCNNode(geometry: wallShape)
