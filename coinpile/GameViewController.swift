@@ -64,6 +64,13 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate {
         }
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        let sceneView = self.view as! SCNView
+        
+        sceneView.play(nil)
+    }
+    
     func setUpForces() {
         let sceneView = self.view as! SCNView
         if highAccuracyPhysicsEnabled { sceneView.scene?.physicsWorld.timeStep = 1/90 }
@@ -231,6 +238,14 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate {
         let randomPerc = CGFloat(arc4random()) / CGFloat(UInt32.max)
         let randomValue = (randomPerc * 2) - 1
         return Float(randomValue)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        let sceneView = self.view as! SCNView
+        
+        // Stop the view's session
+        sceneView.pause(nil)
     }
     
     override var shouldAutorotate: Bool {
