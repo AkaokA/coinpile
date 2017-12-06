@@ -117,7 +117,7 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate {
         if depthOfFieldEnabled {
             cameraNode.camera?.wantsDepthOfField = true
             cameraNode.camera?.focusDistance = 2.66
-            cameraNode.camera?.fStop = 0.18
+            cameraNode.camera?.fStop = 0.28
         }
         sceneView.scene?.rootNode.addChildNode(cameraNode)
         
